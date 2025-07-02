@@ -1,0 +1,34 @@
+# Define os serviços (contêineres) que compõem a sua aplicação.
+services:
+  # Nome do nosso serviço da API. Você pode escolher qualquer nome.
+  app:
+    # Nome do contêiner que será criado. Facilita a identificação ao listar contêineres.
+    container_name: api
+
+    # Instruções de build. O '.' indica para usar o Dockerfile no diretório atual.
+    build: .
+
+    # Mapeamento de portas. Mapeia a porta 8000 da sua máquina (host) para a porta 8000 do contêiner.
+    # Formato: "HOST:CONTAINER"
+    ports:
+      - "8000:8000"
+
+    # Volumes para persistência de dados e hot-reloading.
+    # O mapeamento '.:/app' sincroniza o diretório atual com o /app dentro do contêiner.
+    # Isso permite que alterações no código local sejam refletidas instantaneamente (hot-reload)
+    # e que o banco de dados SQLite (escola.db) seja salvo na sua máquina local.
+    volumes:
+      - .:/app
+
+    # Comando que será executado quando o contêiner iniciar.
+    # Sobrescreve o CMD do Dockerfile, o que é útil para ter comandos diferentes para dev e prod.
+    # --host 0.0.0.0: Torna a API acessível de fora do contêiner.
+    # --reload: Reinicia o servidor automaticamente quando o código muda (ótimo para desenvolvimento).
+    command: uvicorn app:app --host 0.0.0.0 --port 8000 --reload
+
+    # Política de reinicialização.
+    # 'unless-stopped': Reinicia o contêiner automaticamente (ex: após um reboot), a menos que ele tenha sido parado manualmente.
+    restart: unless-stopped
+
+
+
